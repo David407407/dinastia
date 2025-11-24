@@ -1,0 +1,34 @@
+---
+import NavBar from "../components/NavBar.astro";
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Felipa&family=Outfit:wght@100..900&family=Quintessential&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
+		<meta name="generator" content={Astro.generator} />
+		<title>Dinastía</title>
+	</head>
+	<body class="w-full h-screen outfit bg-zinc-950 text-white">
+		
+		<!-- <NavBar /> -->
+		<slot />
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+		font-family: "Roboto", sans-serif;
+	}
+	
+</style>

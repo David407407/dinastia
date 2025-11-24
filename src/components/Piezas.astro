@@ -1,0 +1,39 @@
+---
+import Slider from "./Slider";
+import SliderPiezas from "./SliderPiezas";
+
+// Diseño: Grid de Cards. Una carta grande para el Héroe a la izquierda, y 3 cartas pequeñas para los edificios a la derecha.
+
+// Lado Izquierdo: El Líder
+
+// Imagen: (Tu imagen de Lu Bu o Napoleón).
+
+// Texto: Sube de nivel ganando XP en batalla (+1 conquista, +3 ataque, +2 defensa).
+
+// Niveles: Nivel 2 (5 XP) -> Nivel 3 (15 XP). ¡Desbloquea habilidades únicas!
+
+// Lado Derecho: Infraestructura
+
+// Mercado (150 Oro): Genera +50 Oro/turno.
+
+// Cuartel (200 Oro): Permite reclutar tropas fuera de la Capital.
+
+// Muralla (100 Oro): +2 a la Defensa en ese hexágono.
+
+---
+
+<div class="w-full flex flex-col justify-center items-center gap-8">
+    <h2 class="text-2xl lg:text-6xl text-center charm-regular uppercase">Piezas</h2>
+    <div class=" w-9/10 lg:w-1/3 mx-auto rounded-md  ">
+        <Slider client:only />
+
+        <SliderPiezas client:only />
+        <!-- <div>
+            <h3>Infraestructura</h3>
+            <p>Mercado (150 Oro): Genera +50 Oro/turno.</p>
+            <p>Cuartel (200 Oro): Permite reclutar tropas fuera de la Capital.</p>
+            <p>Muralla (100 Oro): +2 a la Defensa en ese hexágono.</p>
+        </div> -->
+    </div>
+
+</div>

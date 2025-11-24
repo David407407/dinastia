@@ -1,0 +1,22 @@
+---
+import Button from "./Button.astro"
+const { ...props } = Astro.props
+const buttonClass = 'hover:border-[#FFD700] transition-all duration-300 cursor-pointer hover:text-[#FFD700] '
+const textClass = 'text-xs lg:text-sm'
+---
+
+<nav class="w-full fixed bottom-0 z-100 mb-4">
+    <div class="w-9/10 lg:w-1/3 mx-auto flex py-3 px-4 justify-between items-center bg-slate-900/80 text-zinc-100 rounded-lg">
+        <Button textSize={textClass} buttonClass={buttonClass} name="Objetivo" />
+        <Button textSize={textClass} buttonClass={buttonClass} name="Preparación" />
+        <Button textSize={textClass} buttonClass={buttonClass} name="Fases" />
+        <Button textSize={textClass} buttonClass={buttonClass} name="Combate" />
+        <Button textSize={textClass} buttonClass={buttonClass} name="Piezas" />
+        <!-- <h2 class="px-3">
+            <p class="quintessential-regular text-4xl uppercase">Dinastia</p>
+        </h2> -->
+        <!-- <button class="px-6 py-4 bg-[#FFD700] rounded-md">
+            <p class="text-[#333]  outfit font-700">Menú</p>
+        </button> -->
+    </div>
+</nav>

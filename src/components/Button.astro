@@ -1,0 +1,9 @@
+---
+const { name = "Conoce más", buttonClass = '', textSize = 'text-md'} = Astro.props 
+---
+
+<div class="flex justify-center w-1/2 mx-auto">
+    <button class={` ${buttonClass} border-zinc-100 px-6 py-3 border-2 rounded-sm  `}>
+        <p class={ textSize+" outfit"}>{name}</p>
+    </button>
+</div>

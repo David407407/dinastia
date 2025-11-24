@@ -1,0 +1,30 @@
+---
+import Welcome from '../components/Welcome.astro';
+import Objetivo from '../components/Objetivo.astro';
+import Preparacion from '../components/Preparacion.astro';
+import Layout from '../layouts/Layout.astro';
+import Fases from '../components/Fases.astro';
+import Combate from '../components/Combate.astro';
+import Piezas from '../components/Piezas.astro'
+
+---
+
+<Layout>
+	<Objetivo />
+
+	<div class=" w-9/10 h-2 rounded-xl my-8 bg-white mx-auto"></div>
+
+	<Preparacion />
+
+	<div class=" w-9/10 h-2 rounded-xl my-8 bg-white mx-auto"></div>
+
+	<Fases/>
+
+	<div class=" w-9/10 h-2 rounded-xl my-8 bg-white mx-auto"></div>
+
+	<Combate />
+
+	<div class=" w-9/10 h-2 rounded-xl my-8 bg-white mx-auto"></div>
+
+	<Piezas /> 
+</Layout>
