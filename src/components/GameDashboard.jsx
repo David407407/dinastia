@@ -1,96 +1,155 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-// URL del servidor
+// --- CONFIGURACIÓN DE CONEXIÓN ---
 const SOCKET_URL = 'https://dinastia-backend.onrender.com';
 
-// --- COMPONENTES DEL MANUAL ---
-const ManualSection = ({ title, children }) => (
-    <div className="mb-6">
-        <h3 className="text-xl font-serif text-gold mb-3 border-b-2 border-crimson/50 inline-block tracking-wide uppercase">{title}</h3>
-        <div className="text-sm text-parchment/90 space-y-3 font-sans leading-relaxed">{children}</div>
+// --- COMPONENTES DEL MANUAL (ESTILO REGLAMENTO) ---
+const ManualSection = ({ title, icon, children }) => (
+    <div className="mb-8 bg-black/20 p-4 rounded-lg border border-gold/10">
+        <h3 className="text-xl font-serif text-gold mb-4 border-b-2 border-crimson/50 pb-1 inline-flex items-center gap-2 tracking-wide uppercase">
+            <span>{icon}</span> {title}
+        </h3>
+        <div className="text-sm text-parchment/90 space-y-3 font-sans leading-relaxed text-justify">
+            {children}
+        </div>
     </div>
 );
 
-const Objetivo = () => (
-    <ManualSection title="Objetivo: Hegemonía Total">
-        <p>El destino del mundo se decide en <span className="text-gold font-bold">20 Rondas</span>. Al caer el último grano de arena, el soberano que controle la <strong>mayor cantidad de hexágonos</strong> en el tablero será coronado como el vencedor supremo.</p>
-        <p>Comienzas tu legado con una <strong>Capital</strong>, fuente de tu poder inicial. Desde allí, debes expandirte, conquistar y defender tu imperio.</p>
+const Introduccion = () => (
+    <ManualSection title="Objetivo del Juego" icon="👑">
+        <p>
+            Has sido elegido para liderar una civilización hacia la gloria eterna. El mundo es un tablero de hexágonos disputados, y solo uno podrá gobernarlos a todos.
+        </p>
+        <p>
+            <strong>Condición de Victoria:</strong> La partida dura exactamente <span className="text-gold font-bold">20 Rondas</span>. Al finalizar la última ronda, el jugador que controle la mayor cantidad de territorios (hexágonos) será declarado <strong>Emperador Supremo</strong>.
+        </p>
+        <div className="bg-wood-dark/50 p-2 rounded border-l-2 border-gold text-xs italic text-gold/80">
+            "La historia no la escriben los cobardes, sino los conquistadores."
+        </div>
     </ManualSection>
 );
 
-const Economia = () => (
-    <ManualSection title="Economía y Gestión">
-        <p>El oro es la sangre de la guerra. Tus ingresos al inicio de cada turno se calculan así:</p>
-        <ul className="list-disc list-inside ml-2 text-xs space-y-1 mb-2">
-            <li><strong>Capital:</strong> +100 Oro (Base).</li>
-            <li><strong>Mercados:</strong> +50 Oro por cada uno.</li>
-            <li><strong>Territorios:</strong> Ingresos variables según control.</li>
+const SecuenciaTurno = () => (
+    <ManualSection title="Secuencia de Turno" icon="⏳">
+        <p>Cada ronda, los jugadores actúan en orden. Tu turno se divide en tres fases estrictas:</p>
+        <ol className="list-decimal list-inside space-y-3 ml-1">
+            <li>
+                <strong className="text-green-400">Fase de Ingresos:</strong>
+                <br/> Recibes oro de tu Capital (+100), tus Mercados (+50 c/u) y tributos de tus territorios.
+            </li>
+            <li>
+                <strong className="text-blue-400">Fase de Acción (Mover y Construir):</strong>
+                <br/> En esta fase puedes realizar acciones ilimitadas mientras tengas Oro:
+                <ul className="list-disc list-inside ml-4 text-xs mt-1 text-parchment/70">
+                    <li><strong>Reclutar:</strong> Entrena tropas en tus Cuarteles.</li>
+                    <li><strong>Construir:</strong> Erige edificios para mejorar tu economía o defensa.</li>
+                    <li><strong>Marchar:</strong> Mueve tus ejércitos a territorios adyacentes. Si el territorio es enemigo, ¡inicia el combate!</li>
+                </ul>
+            </li>
+            <li>
+                <strong className="text-red-400">Fase de Mantenimiento:</strong>
+                <br/> Debes pagar a tus soldados. El costo es de <span className="text-gold font-bold">1 Oro por cada 10 Tropas</span>.
+                <em className="block text-xs text-red-300 mt-1">Nota: Un imperio en bancarrota no puede sostener un ejército grande.</em>
+            </li>
+        </ol>
+    </ManualSection>
+);
+
+const MovimientoReglas = () => (
+    <ManualSection title="Reglas de Movimiento" icon="🦶">
+        <ul className="space-y-2">
+            <li className="flex gap-2">
+                <span className="text-gold font-bold">1.</span>
+                <span><strong>Adyacencia:</strong> Solo puedes mover tropas a hexágonos que toquen directamente tus fronteras o desde un territorio propio a otro propio conectado.</span>
+            </li>
+            <li className="flex gap-2">
+                <span className="text-gold font-bold">2.</span>
+                <span><strong>La Regla de Guarnición:</strong> Nunca puedes abandonar un territorio por completo. Debes dejar al menos <strong>1 ficha de Tropa</strong> para mantener el control. Si mueves todas tus tropas, pierdes el hexágono.</span>
+            </li>
+            <li className="flex gap-2">
+                <span className="text-gold font-bold">3.</span>
+                <span><strong>Invasión:</strong> Al entrar en un hexágono controlado por otro jugador, el movimiento se detiene y se resuelve una <strong>Batalla</strong> inmediatamente.</span>
+            </li>
         </ul>
-        <div className="bg-red-900/20 p-3 rounded border border-red-500/30 my-2 text-xs">
-            <strong>⚠️ Mantenimiento del Ejército:</strong><br/>
-            Un gran ejército requiere grandes recursos. Al final de tu turno, debes pagar <span className="text-gold">1 Oro</span> por cada <span className="text-white">10 Tropas</span> bajo tu mando. Si no puedes pagar, tus soldados desertarán.
-        </div>
     </ManualSection>
 );
 
-const EdificiosInfo = () => (
-    <ManualSection title="Estructuras del Reino">
-        <div className="grid grid-cols-1 gap-3 text-xs">
-            <div className="flex items-start gap-2">
-                <span className="text-2xl">⚖️</span>
-                <div>
-                    <strong className="text-gold block">Mercado (Coste: 500 Oro)</strong>
-                    El motor de tu economía. Genera <span className="text-green-400">+50 Oro</span> adicionales al inicio de cada turno. Es vital para financiar guerras largas.
-                </div>
-            </div>
-            <div className="flex items-start gap-2">
-                <span className="text-2xl">🏰</span>
-                <div>
-                    <strong className="text-gold block">Cuartel (Coste: 200 Oro)</strong>
-                    Centro de reclutamiento. Permite reclutar tropas en este hexágono y genera <span className="text-red-400">+2 Tropas</span> automáticamente cada turno (levas locales).
-                </div>
-            </div>
-            <div className="flex items-start gap-2">
-                <span className="text-2xl">🧱</span>
-                <div>
-                    <strong className="text-gold block">Muralla (Coste: 400 Oro)</strong>
-                    Fortificación defensiva. Otorga un bono de <span className="text-blue-400">+2 a la Defensa</span> a cualquier ejército estacionado en este hexágono.
-                </div>
-            </div>
-        </div>
-    </ManualSection>
-);
-
-const CombateInfo = () => (
-    <ManualSection title="El Arte de la Guerra">
-        <p>La diplomacia ha fallado. Cuando mueves tu ejército a un hexágono ocupado por un rival, inicia una <strong>Batalla</strong>.</p>
+const CombateReglas = () => (
+    <ManualSection title="Resolución de Combate" icon="⚔️">
+        <p>La guerra se resuelve mediante una mezcla de superioridad numérica y azar.</p>
         
-        <h4 className="text-gold font-bold mt-2 mb-1">⚔️ Resolución de Combate</h4>
-        <p>Ambos jugadores lanzan un dado de 6 caras (D6). El poder total de cada bando se calcula:</p>
-        <div className="bg-black/40 p-2 rounded text-center border border-gold/20 font-mono text-xs my-2 text-green-200">
-            FUERZA = (TROPAS / 10) + TIRA DE DADO + BONOS
+        <div className="bg-black/40 p-3 rounded border border-gold/30 my-3 text-center">
+            <p className="text-xs text-gold uppercase tracking-widest mb-1">Fórmula de Poder</p>
+            <div className="text-lg font-mono font-bold text-white">
+                (TROPAS / 10) + 🎲 DADO (1-6) + BONOS
+            </div>
         </div>
-        
-        <ul className="list-disc list-inside text-xs space-y-1">
-            <li><strong>Victoria del Atacante:</strong> Si tu fuerza total supera a la del defensor, tomas el control del hexágono. El ejército defensor es eliminado.</li>
-            <li><strong>Victoria del Defensor (o Empate):</strong> El defensor repele el ataque. El atacante pierde la <strong>mitad</strong> de sus tropas y debe retirarse al hexágono desde donde atacó.</li>
-        </ul>
 
-        <h4 className="text-gold font-bold mt-3 mb-1">🚩 Conquista y Saqueo</h4>
-        <p>Si capturas un hexágono con edificios enemigos, estos pasan a ser tuyos. Sin embargo, si pierdes el control del territorio, pierdes también los beneficios de esas estructuras.</p>
+        <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="bg-red-900/20 p-2 rounded border border-red-500/20">
+                <strong className="text-red-400 block mb-1">Atacante Gana</strong>
+                Si su poder total es <strong>estrictamente mayor</strong>.
+                <ul className="list-disc list-inside mt-1 text-parchment/60">
+                    <li>Elimina al ejército defensor.</li>
+                    <li>Ocupa el territorio.</li>
+                    <li>Captura los edificios intactos.</li>
+                </ul>
+            </div>
+            <div className="bg-blue-900/20 p-2 rounded border border-blue-500/20">
+                <strong className="text-blue-400 block mb-1">Defensor Gana (o Empate)</strong>
+                Las murallas favorecen al defensor.
+                <ul className="list-disc list-inside mt-1 text-parchment/60">
+                    <li>El atacante es repelido.</li>
+                    <li>Atacante pierde la <strong>MITAD</strong> de sus tropas.</li>
+                    <li>Atacante se retira.</li>
+                </ul>
+            </div>
+        </div>
     </ManualSection>
 );
 
-const Movimiento = () => (
-    <ManualSection title="Movimiento y Maniobras">
-        <ul className="list-disc list-inside space-y-2">
-            <li><strong>Mover:</strong> Puedes mover cualquier número de tropas de un hexágono a uno adyacente por turno.</li>
-            <li><strong>Dividir Fuerzas:</strong> Puedes dejar una guarnición y mover el resto del ejército.</li>
-            <li><strong>Regla de Ocupación:</strong> Para mantener el control de un hexágono y recibir sus beneficios, debes dejar al menos <strong>1 Tropa</strong> estacionada en él. Un territorio vacío se considera neutral.</li>
-        </ul>
+const EdificiosGuia = () => (
+    <ManualSection title="Guía de Estructuras" icon="🏗️">
+        <p className="mb-3 text-xs">Invierte tu oro sabiamente. Las estructuras permanecen en el hexágono donde se construyen.</p>
+        <div className="space-y-3">
+            <div className="flex items-start gap-3 p-2 bg-wood/40 rounded">
+                <div className="text-3xl bg-black/30 rounded p-1">⚖️</div>
+                <div>
+                    <div className="flex justify-between items-center w-full">
+                        <strong className="text-gold">Mercado</strong>
+                        <span className="text-xs bg-yellow-900 px-2 rounded text-yellow-200">Coste: 500</span>
+                    </div>
+                    <p className="text-xs mt-1">El corazón de tu economía. Genera <strong>+50 Oro</strong> adicionales cada turno. Se amortiza en 3 turnos.</p>
+                </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-2 bg-wood/40 rounded">
+                <div className="text-3xl bg-black/30 rounded p-1">🏰</div>
+                <div>
+                    <div className="flex justify-between items-center w-full">
+                        <strong className="text-red-400">Cuartel</strong>
+                        <span className="text-xs bg-yellow-900 px-2 rounded text-yellow-200">Coste: 200</span>
+                    </div>
+                    <p className="text-xs mt-1">Permite reclutar en el frente. Además, genera automáticamente <strong>+2 Tropas</strong> (Levas) al inicio de tu turno.</p>
+                </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-2 bg-wood/40 rounded">
+                <div className="text-3xl bg-black/30 rounded p-1">🧱</div>
+                <div>
+                    <div className="flex justify-between items-center w-full">
+                        <strong className="text-blue-400">Muralla</strong>
+                        <span className="text-xs bg-yellow-900 px-2 rounded text-yellow-200">Coste: 400</span>
+                    </div>
+                    <p className="text-xs mt-1">Fortificación vital. Otorga un bono de <strong>+2 a la Defensa</strong> en batallas que ocurran en este hexágono.</p>
+                </div>
+            </div>
+        </div>
     </ManualSection>
 );
+
+// --- COMPONENTE PRINCIPAL ---
 
 const Icons = {
     Gold: () => <span className="text-yellow-400 text-lg mr-1">💰</span>,
@@ -123,10 +182,9 @@ export default function GameDashboard() {
     const [buildOptions] = useState([
         { id: 'build-1', name: "Mercado", cost: 500, icon: "Market", desc: "+50 Oro/turno", income: 50 },
         { id: 'build-2', name: "Cuartel", cost: 200, icon: "Barracks", desc: "+2 Tropas/turno", recruit: 2 },
-        { id: 'build-3', name: "Muralla", cost: 400, icon: "Wall", desc: "+2 Defensa", defense: 2 },
+        { id: 'build-3', name: "Muralla", cost: 400, icon: "Wall", desc: "Hexágono protegido", defense: 2 },
     ]);
 
-    // Opciones de edificios que puedes encontrar al conquistar
     const conquestOptions = [
         { id: 'conq-1', name: "Mercado Enemigo", type: "Market", desc: "Capturado (+50 Oro)", income: 50 },
         { id: 'conq-2', name: "Cuartel Enemigo", type: "Barracks", desc: "Capturado (+2 Trp)", recruit: 2 },
@@ -137,6 +195,10 @@ export default function GameDashboard() {
     useEffect(() => {
         const newSocket = io(SOCKET_URL);
         setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            console.log(`Conectado al servidor en: ${SOCKET_URL}`);
+        });
 
         newSocket.on('init_player', (myCharacter) => {
             setPlayer({ ...myCharacter, turno: myCharacter.socketId });
@@ -209,8 +271,6 @@ export default function GameDashboard() {
         }
     }
 
-    // --- NUEVAS FUNCIONES: COMBATE Y CONQUISTA ---
-
     const handleDisbandTroops = () => {
         if (!socket || activeTurnId !== socket.id) {
             alert("Espera tu turno para gestionar tu ejército."); return;
@@ -226,30 +286,26 @@ export default function GameDashboard() {
     };
 
     const handleConquest = (buildingType) => {
-        // Añadir edificio capturado
         const newBuilding = { 
             ...buildingType, 
             id: Date.now(), 
-            isConquered: true // Marca para saber que no es construcción propia original
+            isConquered: true 
         };
         setBuildings([...myBuildings, newBuilding]);
         setShowConquestModal(false);
     };
 
     const handleLoseBuilding = (buildingId) => {
-        if (!socket || activeTurnId !== socket.id) return; // Solo en tu turno para evitar errores de sincro raros
+        if (!socket || activeTurnId !== socket.id) return;
         
         const confirmLoss = confirm("¿Has perdido este territorio? El edificio será eliminado de tu control.");
         if (confirmLoss) {
             const updatedBuildings = myBuildings.filter(b => b.id !== buildingId);
             setBuildings(updatedBuildings);
-            // Actualizamos al jugador para que si termina turno, se guarde
             setPlayer({ ...player, buildings: updatedBuildings }); 
         }
     };
 
-
-    // --- RENDER ---
     if (!player) return <div className="flex h-full items-center justify-center text-gold animate-pulse bg-wood-dark">Conectando...</div>;
 
     const isMyTurn = activeTurnId === socket.id;
@@ -264,15 +320,23 @@ export default function GameDashboard() {
             {/* MODAL MANUAL */}
             {showManual && (
                 <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-sm flex justify-center items-start pt-10 px-4 animate-fade-in">
-                    <div className="bg-wood border-4 border-gold rounded-xl w-full h-[85%] relative flex flex-col shadow-2xl">
-                        <div className="p-4 border-b-2 border-gold/50 flex justify-between items-center bg-black/20">
-                            <h2 className="text-2xl font-serif text-gold-light tracking-widest uppercase">Códice</h2>
-                            <button onClick={() => setShowManual(false)} className="text-crimson bg-wood-dark rounded-full w-8 h-8 flex items-center justify-center border border-gold"><Icons.Close /></button>
+                    <div className="bg-wood border-4 border-gold rounded-xl w-full h-[90%] relative flex flex-col shadow-2xl overflow-hidden">
+                        <div className="p-4 border-b-2 border-gold/50 flex justify-between items-center bg-black/40">
+                            <h2 className="text-2xl font-serif text-gold-light tracking-widest uppercase">Reglamento</h2>
+                            <button onClick={() => setShowManual(false)} className="text-crimson bg-wood-dark rounded-full w-8 h-8 flex items-center justify-center border border-gold hover:scale-110 transition-transform"><Icons.Close /></button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gold/50 scrollbar-track-wood-dark">
-                            <Objetivo /><Economia /><EdificiosInfo />
-                            <div className="text-center mt-8 mb-4">
-                                <button onClick={() => setShowManual(false)} className="px-6 py-2 bg-gold text-wood-dark font-bold rounded hover:bg-gold-light">Cerrar</button>
+                        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gold/50 scrollbar-track-wood-dark ">
+                            
+                            <Introduccion />
+                            <SecuenciaTurno />
+                            <MovimientoReglas />
+                            <CombateReglas />
+                            <EdificiosGuia />
+                            
+                            <div className="text-center mt-8 mb-8">
+                                <button onClick={() => setShowManual(false)} className="px-8 py-3 bg-gold text-wood-dark font-bold font-serif rounded border-2 border-white/20 hover:bg-gold-light shadow-lg uppercase tracking-widest">
+                                    Volver al Campo de Batalla
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -311,7 +375,7 @@ export default function GameDashboard() {
             <div className="bg-black/40 backdrop-blur-sm p-3 border-b border-gold/30">
                 <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
                     <div className="flex items-center gap-2">
-                        <button onClick={() => setShowManual(true)} className="text-gold hover:text-white transition-transform active:scale-95"><Icons.Book /></button>
+                        <button onClick={() => setShowManual(true)} className="text-gold hover:text-white transition-transform active:scale-95" title="Reglamento"><Icons.Book /></button>
                         <span className="text-gold font-serif text-xs tracking-widest uppercase">Dinastía</span>
                     </div>
                     <span className="text-parchment font-bold text-xs flex items-center bg-wood px-2 py-0.5 rounded border border-gold/20"><Icons.Time /> Ronda {round}</span>
@@ -352,18 +416,16 @@ export default function GameDashboard() {
                             {incomePreview >= 0 ? '+' : ''}{incomePreview}/turno
                         </span>
                     </div>
-                    {/* TARJETA DE TROPAS MODIFICADA: Botón estático para móvil */}
                     <div className="flex flex-col items-center p-3 bg-black/30 rounded-lg border border-crimson/50 w-28 relative">
                         <span className="text-2xl mb-1">⚔️</span>
                         <span className="text-xl font-bold text-white">{player.troops}</span>
                         <span className="text-[10px] text-crimson uppercase tracking-wider">-{maintenancePreview} Oro/t</span>
                         
-                        {/* Botón explícito para licenciar tropas */}
                         {isMyTurn && (
                             <button 
                                 onClick={handleDisbandTroops}
                                 className="mt-2 bg-red-900/90 hover:bg-red-700 text-white text-[10px] font-bold px-3 py-1 rounded-full border border-red-500 flex items-center gap-1 shadow-sm transition-transform active:scale-95"
-                                title="Licenciar 10 tropas para ahorrar mantenimiento"
+                                title="Licenciar 10 tropas"
                             >
                                 <Icons.Skull /> -10
                             </button>
@@ -412,14 +474,13 @@ export default function GameDashboard() {
                         <div className="text-right">
                              {b.income && <span className="text-xs bg-green-900/50 text-green-200 px-2 py-1 rounded border border-green-800">+{b.income} Oro</span>}
                              {b.recruit && <span className="text-xs bg-red-900/50 text-red-200 px-2 py-1 rounded border border-red-800">+{b.recruit} Trp</span>}
-                             {b.defense && <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded border border-blue-800">+{b.defense} Def</span>}
+                             {b.defense && <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded border border-blue-800">Hexágono protegido</span>}
                         </div>
                         
-                        {/* Botón para ELIMINAR edificio si pierdes el territorio */}
                         {isMyTurn && (
                             <button 
                                 onClick={() => handleLoseBuilding(b.id)}
-                                className="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs flex items-center justify-center rounded-bl  transition-opacity hover:bg-red-800"
+                                className="absolute top-0 right-0 w-6 h-6 bg-red-600 text-white text-xs flex items-center justify-center rounded-bl hover:bg-red-800"
                                 title="Perder Territorio"
                             >
                                 X
