@@ -48,7 +48,7 @@ const ComponentesFisicos = () => (
                     <span className="text-2xl pt-1">🪙</span>
                     <div>
                         <strong className="block text-parchment mb-1">Fichas de Refuerzo (Cartón)</strong>
-                        Por cada <span className="text-gold font-bold">10 Tropas adicionales</span> (20, 30, 40...), añade una ficha de cartón debajo de tu ficha base.
+                        Por cada <span className="text-gold font-bold">10 Tropas adicionales</span> (20, 30, 40...), añade una ficha de cartón sobre de tu ficha base.
                     </div>
                 </li>
             </ul>
