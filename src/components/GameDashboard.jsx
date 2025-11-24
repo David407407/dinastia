@@ -30,6 +30,35 @@ const Introduccion = () => (
     </ManualSection>
 );
 
+const ComponentesFisicos = () => (
+    <ManualSection title="Despliegue Físico" icon="♟️">
+        <p>Tu ejército digital se manifiesta en la mesa. Es vital mantener la correspondencia entre tus números y las fichas en el tablero para que todos vean tu poder real.</p>
+        
+        <div className="bg-wood/40 p-3 rounded border border-gold/20 mt-2">
+            <h4 className="text-gold font-bold mb-2 text-xs uppercase tracking-wider text-center border-b border-white/10 pb-1">Jerarquía de Fichas</h4>
+            <ul className="space-y-3 text-xs">
+                <li className="flex gap-3 items-start">
+                    <span className="text-2xl pt-1">🛡️</span>
+                    <div>
+                        <strong className="block text-parchment mb-1">La Ficha de Tropa (Base)</strong>
+                        Se coloca al acumular tus primeras <span className="text-gold font-bold">10 Tropas</span> en un hexágono (empezando por tu Capital). Representa tu presencia básica.
+                    </div>
+                </li>
+                <li className="flex gap-3 items-start">
+                    <span className="text-2xl pt-1">🪙</span>
+                    <div>
+                        <strong className="block text-parchment mb-1">Fichas de Refuerzo (Cartón)</strong>
+                        Por cada <span className="text-gold font-bold">10 Tropas adicionales</span> (20, 30, 40...), añade una ficha de cartón debajo de tu ficha base.
+                    </div>
+                </li>
+            </ul>
+            <div className="mt-3 bg-black/30 p-2 rounded text-center text-xs text-gold/80 italic border-t border-gold/10">
+                "Ejemplo: Un ejército de 50 soldados se ve como 1 Tapa sobre una torre de 4 Fichas de Cartón."
+            </div>
+        </div>
+    </ManualSection>
+);
+
 const SecuenciaTurno = () => (
     <ManualSection title="Secuencia de Turno" icon="⏳">
         <p>Cada ronda, los jugadores actúan en orden. Tu turno se divide en tres fases estrictas:</p>
@@ -65,7 +94,7 @@ const MovimientoReglas = () => (
             </li>
             <li className="flex gap-2">
                 <span className="text-gold font-bold">2.</span>
-                <span><strong>La Regla de Guarnición:</strong> Nunca puedes abandonar un territorio por completo. Debes dejar al menos <strong>1 ficha de Tropa</strong> para mantener el control. Si mueves todas tus tropas, pierdes el hexágono.</span>
+                <span><strong>La Regla de Guarnición:</strong> Nunca puedes abandonar un territorio por completo. Debes dejar al menos <strong>1 Tropa</strong> para mantener el control. Si mueves todas tus tropas, pierdes el hexágono.</span>
             </li>
             <li className="flex gap-2">
                 <span className="text-gold font-bold">3.</span>
@@ -182,7 +211,7 @@ export default function GameDashboard() {
     const [buildOptions] = useState([
         { id: 'build-1', name: "Mercado", cost: 500, icon: "Market", desc: "+50 Oro/turno", income: 50 },
         { id: 'build-2', name: "Cuartel", cost: 200, icon: "Barracks", desc: "+2 Tropas/turno", recruit: 2 },
-        { id: 'build-3', name: "Muralla", cost: 400, icon: "Wall", desc: "Hexágono protegido", defense: 2 },
+        { id: 'build-3', name: "Muralla", cost: 400, icon: "Wall", desc: "+2 Defensa", defense: 2 },
     ]);
 
     const conquestOptions = [
@@ -325,9 +354,10 @@ export default function GameDashboard() {
                             <h2 className="text-2xl font-serif text-gold-light tracking-widest uppercase">Reglamento</h2>
                             <button onClick={() => setShowManual(false)} className="text-crimson bg-wood-dark rounded-full w-8 h-8 flex items-center justify-center border border-gold hover:scale-110 transition-transform"><Icons.Close /></button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gold/50 scrollbar-track-wood-dark ">
+                        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gold/50 scrollbar-track-wood-dark bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]">
                             
                             <Introduccion />
+                            <ComponentesFisicos />
                             <SecuenciaTurno />
                             <MovimientoReglas />
                             <CombateReglas />
@@ -474,7 +504,7 @@ export default function GameDashboard() {
                         <div className="text-right">
                              {b.income && <span className="text-xs bg-green-900/50 text-green-200 px-2 py-1 rounded border border-green-800">+{b.income} Oro</span>}
                              {b.recruit && <span className="text-xs bg-red-900/50 text-red-200 px-2 py-1 rounded border border-red-800">+{b.recruit} Trp</span>}
-                             {b.defense && <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded border border-blue-800">Hexágono protegido</span>}
+                             {b.defense && <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded border border-blue-800">+{b.defense} Def</span>}
                         </div>
                         
                         {isMyTurn && (
