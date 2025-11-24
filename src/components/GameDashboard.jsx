@@ -33,6 +33,7 @@ const Introduccion = () => (
 const ComponentesFisicos = () => (
     <ManualSection title="Despliegue Físico" icon="♟️">
         <p>Tu ejército digital se manifiesta en la mesa. Es vital mantener la correspondencia entre tus números y las fichas en el tablero para que todos vean tu poder real.</p>
+        <p> <strong>*Cada vez que ocupes fichas, se toman de la caja de fichas.</strong> </p>
         
         <div className="bg-wood/40 p-3 rounded border border-gold/20 mt-2">
             <h4 className="text-gold font-bold mb-2 text-xs uppercase tracking-wider text-center border-b border-white/10 pb-1">Jerarquía de Fichas</h4>
