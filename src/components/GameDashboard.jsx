@@ -2,36 +2,92 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
 // URL del servidor
-const SOCKET_URL = 'http://localhost:3001';
+const SOCKET_URL = 'https://dinastia-backend.onrender.com';
 
 // --- COMPONENTES DEL MANUAL ---
 const ManualSection = ({ title, children }) => (
-    <div className="mb-4">
-        <h3 className="text-xl font-serif text-gold mb-2 border-b border-crimson/50 inline-block">{title}</h3>
-        <div className="text-sm text-parchment/90 space-y-2 font-sans">{children}</div>
+    <div className="mb-6">
+        <h3 className="text-xl font-serif text-gold mb-3 border-b-2 border-crimson/50 inline-block tracking-wide uppercase">{title}</h3>
+        <div className="text-sm text-parchment/90 space-y-3 font-sans leading-relaxed">{children}</div>
     </div>
 );
+
 const Objetivo = () => (
     <ManualSection title="Objetivo: Hegemonía Total">
-        <p>Al finalizar <span className="text-gold font-bold">20 Rondas</span>, el soberano con mayor territorio gana.</p>
-        <p>Inicias con una <strong>Capital</strong> que genera recursos básicos. ¡Expándete o muere!</p>
+        <p>El destino del mundo se decide en <span className="text-gold font-bold">20 Rondas</span>. Al caer el último grano de arena, el soberano que controle la <strong>mayor cantidad de hexágonos</strong> en el tablero será coronado como el vencedor supremo.</p>
+        <p>Comienzas tu legado con una <strong>Capital</strong>, fuente de tu poder inicial. Desde allí, debes expandirte, conquistar y defender tu imperio.</p>
     </ManualSection>
 );
+
 const Economia = () => (
-    <ManualSection title="Economía">
-        <p><strong>Ingresos:</strong> Capital (+100) + Mercados (+50) + Territorios.</p>
-        <div className="bg-red-900/30 p-2 rounded border border-red-500/30 my-2">
-            <strong>⚠️ Mantenimiento:</strong><br/>
-            Pagas <span className="text-gold">1 Oro</span> por cada <span className="text-white">10 Tropas</span> al final del turno.
+    <ManualSection title="Economía y Gestión">
+        <p>El oro es la sangre de la guerra. Tus ingresos al inicio de cada turno se calculan así:</p>
+        <ul className="list-disc list-inside ml-2 text-xs space-y-1 mb-2">
+            <li><strong>Capital:</strong> +100 Oro (Base).</li>
+            <li><strong>Mercados:</strong> +50 Oro por cada uno.</li>
+            <li><strong>Territorios:</strong> Ingresos variables según control.</li>
+        </ul>
+        <div className="bg-red-900/20 p-3 rounded border border-red-500/30 my-2 text-xs">
+            <strong>⚠️ Mantenimiento del Ejército:</strong><br/>
+            Un gran ejército requiere grandes recursos. Al final de tu turno, debes pagar <span className="text-gold">1 Oro</span> por cada <span className="text-white">10 Tropas</span> bajo tu mando. Si no puedes pagar, tus soldados desertarán.
         </div>
     </ManualSection>
 );
+
 const EdificiosInfo = () => (
-    <ManualSection title="Edificios">
-        <ul className="space-y-2 text-xs">
-            <li>⚖️ <strong>Mercado (150 Oro):</strong> +50 Oro/turno.</li>
-            <li>🏰 <strong>Cuartel (200 Oro):</strong> +2 Tropas/turno.</li>
-            <li>🧱 <strong>Muralla (100 Oro):</strong> +2 Defensa.</li>
+    <ManualSection title="Estructuras del Reino">
+        <div className="grid grid-cols-1 gap-3 text-xs">
+            <div className="flex items-start gap-2">
+                <span className="text-2xl">⚖️</span>
+                <div>
+                    <strong className="text-gold block">Mercado (Coste: 500 Oro)</strong>
+                    El motor de tu economía. Genera <span className="text-green-400">+50 Oro</span> adicionales al inicio de cada turno. Es vital para financiar guerras largas.
+                </div>
+            </div>
+            <div className="flex items-start gap-2">
+                <span className="text-2xl">🏰</span>
+                <div>
+                    <strong className="text-gold block">Cuartel (Coste: 200 Oro)</strong>
+                    Centro de reclutamiento. Permite reclutar tropas en este hexágono y genera <span className="text-red-400">+2 Tropas</span> automáticamente cada turno (levas locales).
+                </div>
+            </div>
+            <div className="flex items-start gap-2">
+                <span className="text-2xl">🧱</span>
+                <div>
+                    <strong className="text-gold block">Muralla (Coste: 400 Oro)</strong>
+                    Fortificación defensiva. Otorga un bono de <span className="text-blue-400">+2 a la Defensa</span> a cualquier ejército estacionado en este hexágono.
+                </div>
+            </div>
+        </div>
+    </ManualSection>
+);
+
+const CombateInfo = () => (
+    <ManualSection title="El Arte de la Guerra">
+        <p>La diplomacia ha fallado. Cuando mueves tu ejército a un hexágono ocupado por un rival, inicia una <strong>Batalla</strong>.</p>
+        
+        <h4 className="text-gold font-bold mt-2 mb-1">⚔️ Resolución de Combate</h4>
+        <p>Ambos jugadores lanzan un dado de 6 caras (D6). El poder total de cada bando se calcula:</p>
+        <div className="bg-black/40 p-2 rounded text-center border border-gold/20 font-mono text-xs my-2 text-green-200">
+            FUERZA = (TROPAS / 10) + TIRA DE DADO + BONOS
+        </div>
+        
+        <ul className="list-disc list-inside text-xs space-y-1">
+            <li><strong>Victoria del Atacante:</strong> Si tu fuerza total supera a la del defensor, tomas el control del hexágono. El ejército defensor es eliminado.</li>
+            <li><strong>Victoria del Defensor (o Empate):</strong> El defensor repele el ataque. El atacante pierde la <strong>mitad</strong> de sus tropas y debe retirarse al hexágono desde donde atacó.</li>
+        </ul>
+
+        <h4 className="text-gold font-bold mt-3 mb-1">🚩 Conquista y Saqueo</h4>
+        <p>Si capturas un hexágono con edificios enemigos, estos pasan a ser tuyos. Sin embargo, si pierdes el control del territorio, pierdes también los beneficios de esas estructuras.</p>
+    </ManualSection>
+);
+
+const Movimiento = () => (
+    <ManualSection title="Movimiento y Maniobras">
+        <ul className="list-disc list-inside space-y-2">
+            <li><strong>Mover:</strong> Puedes mover cualquier número de tropas de un hexágono a uno adyacente por turno.</li>
+            <li><strong>Dividir Fuerzas:</strong> Puedes dejar una guarnición y mover el resto del ejército.</li>
+            <li><strong>Regla de Ocupación:</strong> Para mantener el control de un hexágono y recibir sus beneficios, debes dejar al menos <strong>1 Tropa</strong> estacionada en él. Un territorio vacío se considera neutral.</li>
         </ul>
     </ManualSection>
 );
@@ -65,9 +121,9 @@ export default function GameDashboard() {
     const [myBuildings, setBuildings] = useState([]);
 
     const [buildOptions] = useState([
-        { id: 'build-1', name: "Mercado", cost: 150, icon: "Market", desc: "+50 Oro/turno", income: 50 },
+        { id: 'build-1', name: "Mercado", cost: 500, icon: "Market", desc: "+50 Oro/turno", income: 50 },
         { id: 'build-2', name: "Cuartel", cost: 200, icon: "Barracks", desc: "+2 Tropas/turno", recruit: 2 },
-        { id: 'build-3', name: "Muralla", cost: 100, icon: "Wall", desc: "+2 Defensa", defense: 2 },
+        { id: 'build-3', name: "Muralla", cost: 400, icon: "Wall", desc: "+2 Defensa", defense: 2 },
     ]);
 
     // Opciones de edificios que puedes encontrar al conquistar
